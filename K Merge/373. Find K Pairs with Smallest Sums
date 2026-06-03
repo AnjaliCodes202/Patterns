@@ -1,0 +1,46 @@
+class Solution {
+public:
+    struct Node {
+        int val;
+        int r;
+        int c;
+        Node(int v, int r, int c) {
+            this->val = v;
+            this->r = r;
+            this->c = c;
+        }
+    };
+
+    struct cmp {
+        bool operator()(Node a, Node b) { return a.val > b.val; }
+    };
+//
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2,
+                                       int k) {
+        priority_queue<Node, vector<Node>, cmp> pq;
+        int n = nums2.size();
+        int n1 = nums1.size();
+        for (int i = 0; i < min(n,k); i++) {
+            int c = nums1[0] + nums2[i];
+            pq.push({c, i, 0});
+            // if(pq.size()>k) pq.pop();
+        }
+
+        int count = 0;
+        vector<vector<int>> ans;
+        while (count < k) {
+            auto curr = pq.top();
+            int r = curr.r;
+            int c = curr.c;
+            pq.pop();
+            count++;
+            ans.push_back({nums1[c], nums2[r]});
+            if (c + 1 < n1) {
+                int val = nums1[c + 1] + nums2[r];
+                pq.push({val, r, c + 1});
+            }
+        }
+
+        return ans;
+    }
+};
