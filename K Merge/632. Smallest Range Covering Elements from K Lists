@@ -1,0 +1,58 @@
+class Solution {
+public:
+
+    struct Node{
+        int val;
+        int r;
+        int c;
+        Node(int v,int r,int c){
+           this->val = v;
+           this->r = r;
+           this->c = c;
+        }
+    };
+
+    struct cmp{
+        bool operator()(Node a, Node b){
+            return a.val>b.val;
+        }
+    };
+
+    vector<int> smallestRange(vector<vector<int>>& nums) {
+        priority_queue<Node,vector<Node>,cmp>pmin;
+        
+        
+        int mn=INT_MAX;
+        int mx=INT_MIN;
+        int n = nums.size();
+        int maxi = INT_MIN;
+
+        for(int i=0; i<n; i++){
+            pmin.push({nums[i][0],i,0});
+            maxi = max(maxi,nums[i][0]);
+        }
+        mn = pmin.top().val;
+        mx = maxi;
+
+
+        while(!pmin.empty()){
+            auto currmn = pmin.top();
+            pmin.pop();
+            int val = currmn.val;
+            int row = currmn.r;
+            int col = currmn.c;
+            if(col+1<nums[row].size()) {
+                pmin.push({nums[row][col+1],row,col+1});
+                maxi = max(maxi,nums[row][col+1]);
+            }else break;
+            int nxdiff = (maxi-pmin.top().val);
+            int diff = (mx-mn);
+            if(nxdiff<diff) {
+                mn = pmin.top().val;
+                mx = maxi;
+            }
+        }
+        return {mn,mx};
+
+    }
+};
