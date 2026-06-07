@@ -1,0 +1,28 @@
+class Solution {
+public:
+    typedef pair<int,int>p;
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        priority_queue<int,vector<int>,greater<int>> availableChair;
+        priority_queue<p,vector<p>,greater<p>>leavingtime;
+        priority_queue<p,vector<p>,greater<p>>arrivals;
+        for(int i=0; i<times.size(); i++){
+            availableChair.push(i);
+            arrivals.push({times[i][0],i});
+        }
+        while(!arrivals.empty()){
+            int i = arrivals.top().second;
+            arrivals.pop();
+            int arrival = times[i][0];
+            while(!leavingtime.empty() && leavingtime.top().first<=arrival){
+                availableChair.push(leavingtime.top().second);
+                leavingtime.pop();
+            }
+            int chair  = availableChair.top();
+            availableChair.pop();
+            leavingtime.push({times[i][1],chair});
+            if(targetFriend==i) return chair;
+        }
+        return 0;
+
+    }
+};
