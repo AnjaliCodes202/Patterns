@@ -1,0 +1,37 @@
+class Solution {
+public:
+    typedef pair<int,int>p;
+    typedef pair<long long,int>q;
+    struct cmp{
+        bool operator()(p a,p b){
+            if(a.first==b.first) return a.second>b.second;
+            else return a.first>b.first;
+        }
+    };
+    vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
+        priority_queue<p,vector<p>,cmp>availableServer;
+        priority_queue<q,vector<q>,greater<q>>occupied;
+        for(int i=0; i<servers.size(); i++){
+            availableServer.push({servers[i],i});
+        }
+        long long t=0;
+        vector<int>ans(tasks.size());
+        for(int i=0; i<tasks.size(); i++){
+            t = max(t, (long long)i);
+            if(availableServer.empty()){
+                t=occupied.top().first; 
+            }   
+            while(!occupied.empty() && occupied.top().first<=t){
+                auto [time,idx] = occupied.top();
+                occupied.pop();
+                availableServer.push({servers[idx],idx});
+            }
+            auto [wg,idx] = availableServer.top();
+            availableServer.pop();
+            occupied.push({t+tasks[i],idx});
+            ans[i] = idx;
+             
+        }
+        return ans;
+    }
+};
