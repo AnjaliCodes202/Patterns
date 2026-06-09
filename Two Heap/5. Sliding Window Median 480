@@ -1,0 +1,226 @@
+// class Solution {
+// public:
+//     vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+//         priority_queue<int, vector<int>, greater<int>> minh;
+//         priority_queue<int> maxh;
+//         for (int i = 0; i < k; i++) {
+//             minh.push(nums[i]);
+//         }
+//         while (minh.size() > maxh.size()) {
+//             maxh.push(minh.top());
+//             minh.pop();
+//         }
+//         vector<double> ans;
+//         if (maxh.size() == minh.size()) {
+//             double x = (double(maxh.top() + minh.top())) / 2;
+//             ans.push_back(x);
+//         } else {
+//             ans.push_back(maxh.top());
+//         }
+
+//         unordered_map<int, int> mp;
+//         int i = 0, j = k;
+//         int leftsize = maxh.size(), rightsize = minh.size();
+//         while (j < nums.size()) {
+//             mp[nums[i]]++;
+//             // while(mp.find(maxh.top())!=mp.end()){
+//             //     mp[maxh.top()]--;
+//             //     maxh.pop();
+//             // }
+//             // while(mp.find(minh.top())!=mp.end()){
+//             //     mp[minh.top()]--;
+//             //     minh.pop();
+//             // }
+//             if (nums[i] <= maxh.top()){
+//                 maxh.push(nums[i]);
+//                 leftsize++;
+//             }else{
+//                 minh.push(nums[i]);
+//                 rightsize++;
+//             }
+            
+           
+//             if (nums[i] <= maxh.top())
+//                 leftsize--;
+//             else
+//                 rightsize--;
+//             while (!minh.empty() && leftsize < rightsize) {
+//                 maxh.push(minh.top());
+//                 minh.pop();
+//                 rightsize--;
+//                 leftsize++;
+//             }
+//             while (!maxh.empty() && leftsize > rightsize+1) {
+//                 minh.push(maxh.top());
+//                 maxh.pop();
+//                 leftsize--;
+//                 rightsize++;
+//             }
+//             while (!maxh.empty() && mp[maxh.top()] > 0) {
+//                 mp[maxh.top()]--;
+//                 if (mp[maxh.top()] == 0)
+//                     mp.erase(maxh.top());
+//                 maxh.pop();
+//             }
+//             while (!minh.empty() && mp[minh.top()] > 0) {
+//                 mp[minh.top()]--;
+//                 if (mp[minh.top()] == 0)
+//                     mp.erase(minh.top());
+//                 minh.pop();
+//             }
+//             if (leftsize == rightsize) {
+//                 double x = (double(maxh.top() + minh.top())) / 2;
+//                 ans.push_back(x);
+//             } else {
+//                 ans.push_back(maxh.top());
+//             }
+//             i++;
+//             j++;
+//         }
+//         return ans;
+//     }
+// };
+
+
+
+
+//------------------------logic is correct but implementation is not-----------------------
+class Solution {
+public:
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+
+        priority_queue<int> small; 
+        priority_queue<int, vector<int>, greater<int>> large; 
+
+        unordered_map<int,int> delayed;
+
+        int smallSize = 0;
+        int largeSize = 0;
+
+    
+        for(int i=0;i<k;i++){
+
+            if(small.empty() || nums[i] <= small.top()){
+                small.push(nums[i]);
+                smallSize++;
+            }
+            else{
+                large.push(nums[i]);
+                largeSize++;
+            }
+
+            while(smallSize > largeSize + 1){
+                large.push(small.top());
+                small.pop();
+                smallSize--;
+                largeSize++;
+            }
+
+            while(smallSize < largeSize){
+                small.push(large.top());
+                large.pop();
+                smallSize++;
+                largeSize--;
+            }
+        }
+
+        vector<double> ans;
+
+        if(k&1)
+            ans.push_back((double)small.top());
+        else
+            ans.push_back(((double)small.top() + (double)large.top())/2.0);
+
+        for(int r=k;r<nums.size();r++){
+
+            int incoming = nums[r];
+            int outgoing = nums[r-k];
+
+            delayed[outgoing]++;
+
+            if(outgoing <= small.top())
+                smallSize--;
+            else
+                largeSize--;
+
+   
+            if(incoming <= small.top()){
+                small.push(incoming);
+                smallSize++;
+            }
+            else{
+                large.push(incoming);
+                largeSize++;
+            }
+
+      
+            while(smallSize > largeSize + 1){
+
+                large.push(small.top());
+                small.pop();
+
+                smallSize--;
+                largeSize++;
+
+                while(!small.empty() &&
+                      delayed[small.top()] > 0){
+
+                    delayed[small.top()]--;
+                    if(delayed[small.top()] == 0)
+                        delayed.erase(small.top());
+
+                    small.pop();
+                }
+            }
+
+            while(smallSize < largeSize){
+
+                small.push(large.top());
+                large.pop();
+
+                smallSize++;
+                largeSize--;
+
+                while(!large.empty() &&
+                      delayed[large.top()] > 0){
+
+                    delayed[large.top()]--;
+                    if(delayed[large.top()] == 0)
+                        delayed.erase(large.top());
+
+                    large.pop();
+                }
+            }
+
+          
+            while(!small.empty() &&
+                  delayed[small.top()] > 0){
+
+                delayed[small.top()]--;
+
+                if(delayed[small.top()] == 0)
+                    delayed.erase(small.top());
+
+                small.pop();
+            }
+
+            while(!large.empty() &&
+                  delayed[large.top()] > 0){
+
+                delayed[large.top()]--;
+
+                if(delayed[large.top()] == 0)
+                    delayed.erase(large.top());
+
+                large.pop();
+            }
+
+            if(k&1)
+                ans.push_back((double)small.top());
+            else
+                ans.push_back(((double)small.top() + (double)large.top())/2.0);
+        }
+
+        return ans;
+    }
+};
