@@ -1,1 +1,1 @@
-# Patterns
+# Patterns-Wise algorithm
