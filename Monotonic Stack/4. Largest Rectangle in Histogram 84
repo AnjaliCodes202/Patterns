@@ -1,0 +1,66 @@
+// class Solution {
+// public:
+//     typedef pair<int, int> p;
+//     int largestRectangleArea(vector<int>& height) {
+//         int n = height.size();
+//         vector<int> prevSmaller(n);
+//         vector<int> nextSmaller(n);
+//         stack<p> prevst;
+//         for (int i = 0; i < n; i++) {
+//             while (!prevst.empty() && prevst.top().first >= height[i]) {
+//                 prevst.pop();
+//             }
+//             if (prevst.empty()) {
+//                 prevSmaller[i] = -1;
+//             } else {
+//                 auto [sm, idx] = prevst.top();
+//                 prevSmaller[i] = idx;
+//             }
+//             prevst.push({height[i], i});
+//         }
+//         stack<p> nextst;
+//         for (int i = n - 1; i >= 0; i--) {
+//             while (!nextst.empty() && nextst.top().first >= height[i])
+//                 nextst.pop();
+//             if (nextst.empty())
+//                 nextSmaller[i] = n;
+//             else {
+//                 auto [sm, idx] = nextst.top();
+//                 nextSmaller[i] = idx;
+//             }
+//             nextst.push({height[i], i});
+//         }
+
+//         long long mx = -1e9;
+//         for (int i = 0; i < n; i++) {
+//             long long area = (nextSmaller[i] - prevSmaller[i] - 1) * height[i];
+//             mx = max(mx, area);
+//         }
+//         return mx;
+//     }
+// };
+
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        stack<int> st;
+        int n = heights.size();
+        long long ans = 0;
+        for (int i = 0; i <= n; i++) {
+            while (!st.empty() && (i == n || heights[st.top()] >= heights[i])) {
+                int h = heights[st.top()];
+                st.pop();
+                int right = i;
+                int left;
+                if (st.empty())
+                    left = -1;
+                else
+                    left = st.top();
+                long long width = right - left - 1;
+                ans = max(ans, width * h);
+            }
+            st.push(i);
+        }
+        return ans;
+    }
+};
