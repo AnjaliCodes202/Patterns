@@ -1,0 +1,106 @@
+// class Solution {
+// public:
+//     // int mod = 1e9+7;
+//     long long subArrayRanges(vector<int>& nums) {
+//         int n = nums.size();
+
+//         vector<pair<int,int>>sm(n);
+//         vector<pair<int,int>>gr(n);
+//         stack<int>nxsm,nxgr,prevsm,prevgr;
+//         for(int i=n-1; i>=0; i--){
+//             while(!nxsm.empty() && nums[nxsm.top()]>=nums[i]) nxsm.pop();
+//             while(!nxgr.empty() && nums[nxgr.top()]<=nums[i]) nxgr.pop();
+//             if(nxsm.empty()) sm[i].second = n;
+//             else sm[i].second = nxsm.top();
+//             if(nxgr.empty()) gr[i].second = n;
+//             else gr[i].second = nxgr.top();
+//             nxsm.push(i);
+//             nxgr.push(i);
+//         }
+//         for(int i=0; i<n; i++){
+//             while(!prevsm.empty() && nums[prevsm.top()]>nums[i]) prevsm.pop();
+//             while(!prevgr.empty() && nums[prevgr.top()]<nums[i]) prevgr.pop();
+//             if(prevsm.empty()) sm[i].first = -1;
+//             else sm[i].first = prevsm.top();
+//             if(prevgr.empty()) gr[i].first = -1;
+//             else gr[i].first = prevgr.top();
+//             prevsm.push(i);
+//             prevgr.push(i);
+//         }
+//         long long smsum=0;
+//         long long grsum=0;
+    
+//         for(int i=0; i<n;i++){
+//             int lefts = i-sm[i].first;
+//             int rights = sm[i].second - i;
+//             smsum =smsum+(1LL*lefts*rights*nums[i]);
+//             int leftg = i-gr[i].first;
+//             int rightg = gr[i].second - i;
+//             grsum =grsum+(1LL*leftg*rightg*nums[i]);
+//         }
+//         long long ans = grsum-smsum;
+//         return ans;
+//     }
+// };
+
+
+class Solution {
+public:
+    long long subArrayRanges(vector<int>& nums) {
+
+        int n = nums.size();
+
+        long long minSum = 0;
+        long long maxSum = 0;
+
+        stack<int> st;
+
+        // ---------- Minimum Contribution ----------
+
+        for(int i = 0; i <= n; i++) {
+
+            while(!st.empty() &&
+                  (i == n || nums[st.top()] >= nums[i])) {
+
+                int idx = st.top();
+                st.pop();
+
+                int prev =
+                    st.empty() ? -1 : st.top();
+
+                long long left = idx - prev;
+                long long right = i - idx;
+
+                minSum += 1LL * nums[idx] * left * right;
+            }
+
+            st.push(i);
+        }
+
+        while(!st.empty()) st.pop();
+
+        
+
+        for(int i = 0; i <= n; i++) {
+
+            while(!st.empty() &&
+                  (i == n || nums[st.top()] <= nums[i])) {
+
+                int idx = st.top();
+                st.pop();
+
+                int prev =
+                    st.empty() ? -1 : st.top();
+
+                long long left = idx - prev;
+                long long right = i - idx;
+
+                maxSum += 1LL * nums[idx] * left * right;
+            }
+
+            st.push(i);
+        }
+
+        return maxSum - minSum;
+    }
+};
