@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int mod = 1e9+7;
+    int sumSubarrayMins(vector<int>& arr) {
+        int n = arr.size();
+        vector<pair<int,int>>v(n);
+        stack<int>nx;
+        stack<int>prev;
+        for(int i=n-1; i>=0; i--){
+            while(!nx.empty() && arr[nx.top()]>arr[i]){
+                nx.pop();
+            }
+            if(nx.empty()) v[i].second = n;
+            else v[i].second = nx.top();
+            nx.push(i);   
+        }
+        for(int i=0; i<n; i++){
+            while(!prev.empty() && arr[prev.top()]>=arr[i]) prev.pop();
+            if(prev.empty()) v[i].first = -1;
+            else v[i].first = prev.top();
+            prev.push(i); 
+        }
+        long long sum = 0;
+        for(int i=0; i<n; i++){
+            int left = i-v[i].first;
+            int right = v[i].second-i;
+            sum=(sum+(1LL*left*right*arr[i]))%mod;
+        }
+        return sum;
+    }
+};
