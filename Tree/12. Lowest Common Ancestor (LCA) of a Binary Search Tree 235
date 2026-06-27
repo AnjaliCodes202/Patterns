@@ -1,0 +1,51 @@
+// /**
+//  * Definition for a binary tree node.
+//  * struct TreeNode {
+//  *     int val;
+//  *     TreeNode *left;
+//  *     TreeNode *right;
+//  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+//  * };
+//  */
+
+// class Solution {
+// public:
+     
+//     TreeNode* lca(TreeNode* root,TreeNode* p,TreeNode* q){
+//         if(!root) return nullptr;
+//         if(root==p || root==q) return root;
+//         if((root->val>p->val && root->val<q->val) || (root->val>q->val && root->val<p->val)) return root;
+//         TreeNode* flag1=nullptr;
+//         TreeNode* flag2=nullptr;
+//         if(root->val<p->val) {
+//             flag2 = lca(root->right,p,q);
+//         }else{
+//             flag1 = lca(root->left,p,q);
+//         }
+//         if(flag1 && flag2) return root;
+//         return flag1? flag1:flag2;
+//     }
+
+//     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+//         if(root==p || root==q) return root;
+//         return lca(root,p,q);
+//     }
+// };
+
+
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+
+        if (root == p || root == q)
+            return root;
+
+        if (p->val < root->val && q->val < root->val)
+            return lowestCommonAncestor(root->left, p, q);
+
+        if (p->val > root->val && q->val > root->val)
+            return lowestCommonAncestor(root->right, p, q);
+
+        return root;
+    }
+};
