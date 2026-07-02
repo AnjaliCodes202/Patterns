@@ -4,4 +4,4 @@
 #Tree
 #Dynamic Programming
 #a) Take/Not Take(0/1)
-#b)
+#b) Infinite Supply DP
